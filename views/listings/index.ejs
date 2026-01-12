@@ -48,7 +48,7 @@
   }
 </style>
 
-<!-- ✅ Category Filters -->
+<!--  Category Filters -->
 <div id="filters">
   <a href="/listings?category=rooms" class="filter"><i class="fa-solid fa-bed"></i><p>Rooms</p></a>
   <a href="/listings?category=trending" class="filter"><i class="fa-solid fa-fire"></i><p>Trending</p></a>
@@ -70,7 +70,7 @@
   </div>
 </div>
 
-<!-- ✅ Listings Section -->
+<!--  Listings Section -->
 <div class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1 mt-3">
   <% for (let listing of allListings) { %>
     <a href="/listings/<%= listing._id %>" class="listing-link">
@@ -95,14 +95,14 @@
 </div>
 
 <script>
-  // ✅ Toggle tax info
+  //  Toggle tax info
   document.getElementById("switchCheckDefault").addEventListener("click", () => {
     document.querySelectorAll(".tax-info").forEach(info => {
       info.style.display = info.style.display === "inline" ? "none" : "inline";
     });
   });
 
-  // ✅ Highlight active category
+  //  Highlight active category
   const urlParams = new URLSearchParams(window.location.search);
   const currentCategory = urlParams.get("category");
   const filters = document.querySelectorAll(".filter");

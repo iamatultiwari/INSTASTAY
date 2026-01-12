@@ -9,11 +9,11 @@
 
 
 
-<!-- from chatgpt 16-19 -->
+
 <script>
   const mapToken = "<%= mapToken %>"; 
   const coordinates = <%- JSON.stringify(listing.geometry.coordinates) %>;
-  const placeName = <%- JSON.stringify(listing.location) %>; // ✅ renamed (not 'location')
+  const placeName = <%- JSON.stringify(listing.location) %>; 
 
   console.log("Map token from EJS:", mapToken);
   console.log("Coordinates from EJS:", coordinates);

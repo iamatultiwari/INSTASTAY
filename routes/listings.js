@@ -24,7 +24,7 @@ router
       let allListings;
 
       if (category) {
-        // ✅ Ensure case-insensitive match
+        //  Ensure case-insensitive match
         allListings = await Listing.find({ category: category.toLowerCase() });
       } else {
         allListings = await Listing.find({});
@@ -43,7 +43,8 @@ router
 
 // NEW Listing Form
 
-router.get("/new", isLoggedIn, listingController.rendernewForm);
+//router.get("/new", isLoggedIn, listingController.rendernewForm);
+router.get("/new", isLoggedIn, listingController.renderNewForm);
 
 
 // SHOW / EDIT / DELETE Routes
