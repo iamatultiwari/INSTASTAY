@@ -105,12 +105,11 @@
 //   console.log(`🚀 Server running on port ${PORT}`);
 // });
 
+
+
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
-
-console.log("ENV:", process.env.NODE_ENV);
-console.log("SESSION_SECRET loaded:", !!process.env.SESSION_SECRET);
 
 const express = require("express");
 const app = express();
@@ -131,18 +130,13 @@ const userRouter = require("./routes/user.js");
 
 const User = require("./models/user.js");
 
-const MONGO_URL = process.env.MONGO_URL;
-
-// Connect to MongoDB
+// MongoDB
 mongoose
-  .connect(MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .connect(process.env.MONGO_URL)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.log(err));
 
-// Middleware
+// View engine & middleware
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -150,28 +144,28 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
-// Session & Flash
-const sessionOptions = {
-  secret: process.env.SESSION_SECRET || "fallbacksecret",
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    httpOnly: true,
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  },
-};
-app.use(session(sessionOptions));
+// Session & flash
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    },
+  })
+);
 app.use(flash());
 
-// Passport setup
+// Passport
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// Set locals for flash messages and current user
+// Locals
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -179,41 +173,32 @@ app.use((req, res, next) => {
   next();
 });
 
+// Redirect homepage to listings
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
 
 // Routes
-
-
-// Landing page: show listings index
-app.use("/", listingsRouter);        // Root (/) now shows listings index
-app.use("/listings", listingsRouter); // Optional: /listings still works
-
-// User routes (signup, login, logout)
 app.use("/", userRouter);
-
-// Review routes
+app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 
-// Stripe Payment Success / Cancel
-app.get("/success", (req, res) => {
-  res.send("✅ Payment successful! Thank you.");
-});
+// Stripe callbacks
+app.get("/success", (req, res) => res.send("Payment Successful"));
+app.get("/cancel", (req, res) => res.send("Payment Cancelled"));
 
-app.get("/cancel", (req, res) => {
-  res.send("❌ Payment cancelled.");
-});
-
-// 404 handler
+// 404
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
 });
 
-// Global error handler
+// Error handler
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message = "Something went wrong." } = err;
+  const { statusCode = 500, message = "Something went wrong" } = err;
   res.status(statusCode).render("error", { message });
 });
 
-// Start server
+// Server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
