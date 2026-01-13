@@ -25,7 +25,8 @@ const userRouter = require("./routes/user.js");
 
 const User = require("./models/user.js");
 
-const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/AIRBNB";
+const MONGO_URL = process.env.MONGO_URL 
+//  "mongodb://127.0.0.1:27017/AIRBNB";
 
 // Connect to MongoDB
 mongoose
